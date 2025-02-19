@@ -20,7 +20,7 @@ public class JDBCTemplate {
 		
 		// 읽어들이고자 하는 driver.properties 파일의 물리적인 경로(ㅡ실제로 있는 곳은 src인데, 실질적으로 was 올라가는 경로는 WebContent>WEB-INF>classes에 파일 있음
 		String filePath = JDBCTemplate.class.getResource("/db/driver/driver.properties").getPath(); // JDBCTemplate의 class파일 있는 곳 어디냐?
-		// "C:/05_server-workspace2/jspProject/WebContent/WEB-INF/classes/db/driver/driver.properties → 이 파일의 물리적인 경로 가져옴
+		// "C:/05_server-workspace2/jspProject/WebContent/WEB-INF/classes/db/driver/driver.properties → sysout으로 검색해보면 이 파일의 물리적인 경로 가져옴
 		
 		try {
 			prop.load(new FileInputStream(filePath)); // // prop.load(입력용스트림 생성구문); → prop.load(new FileInputStream("dirver.properties 경로")); → surround with multicatch
@@ -36,7 +36,7 @@ public class JDBCTemplate {
 			conn = DriverManager.getConnection(prop.getProperty("url"), 
 											   prop.getProperty("username"),
 											   prop.getProperty("password"));
-			conn.setAutoCommit(false); // 꼭 작성해주어야함(안하면 맘대로 commit, rollback됨)
+			conn.setAutoCommit(false); // 오토커밋을 끄는 코드,,꼭 작성해주어야함(안하면 맘대로 commit, rollback됨)
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
