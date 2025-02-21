@@ -72,24 +72,20 @@ public class MemberService {
 	}
 	
 	
-	public Member deleteMember(String userId, String userPwd) {
+	public int deleteMember(String userId, String userPwd) {
 		
 		Connection conn = getConnection();
-		int result = new MemberDao().deleteMember(conn, userId, userPwd);
-		
-		Member deleteMem = null;
-		if(result > 0) {
-			commit(conn); // 비번 변경 확정
-			deleteMem = new MemberDao().selectMember(conn, userId);
-		}else {
-			rollback(conn);
-		}
-		
-		close(conn);
-		return deleteMem ;
-		
-		
-		
+	    int result = new MemberDao().deleteMember(conn, userId, userPwd);
+
+	    if (result > 0) {
+	        commit(conn);
+	    } else {
+	        rollback(conn);
+	    }
+
+	    close(conn);
+	    return result;
 	}
+
 
 }

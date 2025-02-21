@@ -196,31 +196,28 @@ public class MemberDao {
 	
 	
 	public int deleteMember(Connection conn, String userId, String userPwd) {
-
-		int result = 0;
-		
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		
-		String sql = prop.getProperty("deleteMember");
-		
-		try {
-			pstmt = conn.prepareStatement(sql); // 미완성된 sql문
-			
-			pstmt.setString(1, userId);
-			pstmt.setString(2, userPwd);
-			
-			result = pstmt.executeUpdate();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			close(pstmt);
-		}
-		
-		return result;
-		
+	    int result = 0;
+	    
+	    PreparedStatement pstmt = null;
+	    
+	    String sql = prop.getProperty("deleteMember");
+	    
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, userPwd);
+	        
+	        result = pstmt.executeUpdate();  // executeUpdate() 사용 // 실행 결과 행 개수를 result 변수에 저장
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        close(pstmt);
+	    }
+	    
+	    return result; // 삭제된 행 개수 반환
 	}
+
 	
 	
 	

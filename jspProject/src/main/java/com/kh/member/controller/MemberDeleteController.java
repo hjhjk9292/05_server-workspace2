@@ -33,28 +33,25 @@ public class MemberDeleteController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		request.setCharacterEncoding("utf-8");
-		
+		request.setCharacterEncoding("utf-8"); // 한글 깨짐 방지
+
+		// 요청값 추출
 		String userId = request.getParameter("userId");
 		String userPwd = request.getParameter("userPwd");
-			
-		Member deleteMem = new MemberService().deleteMember(userId, userPwd);
-		
-		if(deleteMem == null) {
-			HttpSession session = request.getSession();
-			session.setAttribute("alertMsg", "회원탈퇴 실패!");
-			
-			response.sendRedirect(request.getContextPath());
-			
-		}else {
 
-			HttpSession session = request.getSession();
-			session.removeAttribute("loginUser"); // 세션에 loginUser 라는 키값을 지우기
-			
+		// 서비스 호출 (삭제된 행 개수 반환)
+		int result = new MemberService().deleteMember(userId, userPwd);
+
+		HttpSession session = request.getSession(); // 세션 객체 한 번만 생성
+
+		if (result > 0) { // 삭제 성공
+			session.removeAttribute("loginUser"); // 로그인 정보 삭제
 			session.setAttribute("alertMsg", "성공적으로 회원탈퇴되었습니다. 그동안 이용해주셔서 감사합니다.");
 			
-
-			
+			response.sendRedirect(request.getContextPath()); // 메인 페이지로 리다이렉트
+		} else { // 삭제 실패
+			session.setAttribute("alertMsg", "회원탈퇴 실패!");
+			response.sendRedirect(request.getContextPath());
 		}
 		
 		

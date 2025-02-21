@@ -142,6 +142,7 @@
 	        	<b> 탈퇴 후 복구가 불가능합니다. <br> 정말로 탈퇴하시겠습니까?</b>
 	        	<br><br>
 	        	
+	        	<input type="hidden" name="userId" value="<%= loginUser.getUserId() %>">  
 	        	비밀번호 : <input type="password" name="userPwd" required> <br><br>
 	        	<button type="submit" class="btn btn-sm btn-danger" onclick="deleteMember()">탈퇴하기</button>
 	        	

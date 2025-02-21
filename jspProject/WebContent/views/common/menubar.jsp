@@ -89,7 +89,7 @@
                 </tr>
                 <tr>
                     <th>비밀번호</th>
-                    <td><input type="text" name="userPwd" required></td>
+                    <td><input type="password" name="userPwd" required></td>
                 </tr>
                 <tr>
                     <th colspan="2">
@@ -127,7 +127,7 @@
 
     <div class="nav-area" align="center">
         <div class="menu"><a href="<%= contextPath %>">HOME</a></div>
-        <div class="menu"><a href="">공지사항</a></div>
+        <div class="menu"><a href="<%= contextPath %>/list.no">공지사항</a></div>
         <div class="menu"><a href="">일반게시판</a></div>
         <div class="menu"><a href="">사진게시판</a></div>
     </div>
