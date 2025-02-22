@@ -52,20 +52,17 @@ public class NoticeInsertController extends HttpServlet {
 		// n.setNoticeWriter(userNo + ""); // userNo -> String으로 만들어줌
 		n.setNoticeWriter(String.valueOf(userNo));
 		
-		new NoticeService().insertNotice(n);
-		
-		int result = new NoticeService().insertNotice(n);
-		
-		if(result > 0) { // 성공 => /jsp/list.no url 재요청 
-			// => 목록 페이지 보여지도록 alert(성공적으로 공지사항 등록됐습니다!)
-			session.setAttribute("alertMsg", "성공적으로 공지사항 등록됐습니다!");
-			response.sendRedirect(request.getContextPath() + "/list.no");
-			
-		}else { // 실패 => 에러문구(공지사항 등록 실패) 담아서 에러페이지 포워딩 (* 포워딩 할 때는 request에 담아야한다!! 그래야 응답할 때 1회성으로 사용~)
-			request.setAttribute("errorMsg", "공지사항 등록 실패");
-			request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
-		}
-		
+        // 공지사항 등록
+        int result = new NoticeService().insertNotice(n);
+
+        if (result > 0) { // 성공
+            session.setAttribute("alertMsg", "성공적으로 공지사항 등록됐습니다!");
+            response.sendRedirect(request.getContextPath() + "/list.no");
+            return;
+        } else { // 실패
+            request.setAttribute("errorMsg", "공지사항 등록 실패");
+            request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
+        }	
 		
 	}
 
