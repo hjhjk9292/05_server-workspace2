@@ -60,9 +60,10 @@ public class NoticeInsertController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/list.no");
             return;
         } else { // 실패
-            request.setAttribute("errorMsg", "공지사항 등록 실패");
+            request.setAttribute("errorMsg", "공지사항 등록 실패! 공지사항 제목은 한글 기준 20자(60Byte) 이하로 입력해야 합니다.");
             request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
-        }	
+        }
+	
 		
 	}
 
