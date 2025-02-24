@@ -24,6 +24,11 @@
         border: 1px solid white;
         text-align: center;
     }
+    
+    .list-area>tbody>tr:hover{
+    	background-color : gray;
+    	cursor : pointer;    
+    }
 </style>
 </head>
 <body>
@@ -80,10 +85,24 @@
             </tbody>
         </table>
 
-
-
-
     </div>
+    
+    <script>
+    	$(function(){
+    		$(".list-area>tbody>tr").click(function(){
+    			const num = $(this).children().eq(0).text()
+    			// console.log(num) // ㅡ 글번호
+    			
+    			// 요청할url?키=벨류&키=벨류
+    			// 요청 시 전달값 (키=벨류) == 쿼리스트링 방식★
+    			
+    			// /jsp/detail.no?num=내가누른글번호
+    			location.href = '<%= contextPath %>/detail.no?num=' + num;
+    			// 											ㄴ 공백없이 작성해주기
+    			
+    		})
+    	})
+    </script>
 
 </body>
 </html>
