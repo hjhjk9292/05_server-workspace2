@@ -32,5 +32,12 @@
 	       )
 	 WHERE RNUM BETWEEN ? AND ?
 	</entry>
+	
+	<entry key="selectCategoryList">
+		SELECT
+		       CATEGORY_NO
+		     , CATEGORY_NAME
+		  FROM CATEGORY
+	</entry>
 
 </properties>
