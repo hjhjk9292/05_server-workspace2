@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.kh.board.model.service.BoardService;
+import com.kh.board.model.vo.Attachment;
+import com.kh.board.model.vo.Board;
+import com.kh.common.MyFileRenamePolicy;
 import com.oreilly.servlet.MultipartRequest;
 
 /**
@@ -39,7 +43,7 @@ public class BoardInsertController extends HttpServlet {
 		// String category = request.getParameter("category");
 		
 		// enctype이 multipart/form-data로 잘 전송되었을 경우 전반적인 내용들이 수행되도록
-		if(ServletFileUpload.isMultipartContent(request)) {
+		if(ServletFileUpload.isMultipartContent(request)) { //ㅡ 사용자가 요청한 값은 request에 담기는데 내가 요청 받은 것이 isMultipartContent 가 맞는지 확인하는 메소드
 			
 			// 파일 업로드를 위한 라이버르러ㅣ : cos.jar (com.oreilly.servlet의 약자)
 			// http://www.servlet.com 접속해서 다운로드
@@ -68,15 +72,65 @@ public class BoardInsertController extends HttpServlet {
 			 * 
 			 * 		아래 구문 한 줄 실행만으로 넘어온 첨부파일이 해당 폴더에 무조건 업로드 됨!!!
 			 * 
+			 * 		단, 업로드 시 파일명은 수정해주는게 일반적임! 그래서 파일명 수정시켜주는 객체 제시해야됨
+			 * 		=> 같은 파일명이 존재할 경우 덮어씌워질 수 있고, 파일명에 한글/특수문자/띄어쓰기가 포함될 경우 서버에 따라 문제 발생될 수 있음
+			 * 
+			 * 		기본적으로 파일명이 안겹치도록 수정 작업해주는 객체 있음
+			 * 		=> FileRenamePolicy 객체 (cos.jar에서 제공하는 객체) => 인터페이스!
+			 * 		=> 내부적으로 해당 클래스에 rename() 메소드가 실행되면서 파일명 수정된 후 업로드
+			 * 		   rename(원본파일){
+			 * 			기존에 동일한 파일명이 존재할 경우
+			 * 			파일명 뒤에 카운팅된 숫자를 붙여줌
+			 * 			ex) aaa.jpg, aaa1.jpg, aaa2.jpg
+			 * 				꽃.png, 꽃1.png
+			 * 				return 수정파일 ㅡ 원본파일명과 이름이 같으면 수정파일을 반환함
+			 * 		   }
+			 * 
+			 * 		나만의 방식으로 절대 안겹치도록 rename 할 수 있게
+			 * 		나만의 FileRenamePolicy 클래스(rename 메소드 재정의) 만들기!
+			 * 		com.kh.common.MyFileRenamePolicy 클래스 만들기
+			 * 
 			 */
-			MultipartRequest multiRequest = new MultipartRequest(request, savePath, maxSize, "UTF-8", 파일명수정시켜주는객체);
+			MultipartRequest multiRequest = new MultipartRequest(request, savePath, maxSize, "UTF-8", new MyFileRenamePolicy()); // ㅡ MyFileRenamePolicy() 객체가 파일명 자동으로 변경해주는 메소드를 호출
 			
 			
 			// 3. DB에 기록할 데이터들 뽑아서 VO에 주섬주섬 담기
+			//	  > 카테고리 번호, 제목, 내용, 작성자회원번호 뽑아서 Board 테이블 insert
+			//	  > 넘어온 첨부파일이 있다면 원본명, 수정명, 저장경로 Attachment 테이블 insert
+			String category = multiRequest.getParameter("category"); // 반드시 multiRequest로 작성!★
+			String boardTitle = multiRequest.getParameter("title");
+			String boardContent = multiRequest.getParameter("content");
+			String boardWriter = multiRequest.getParameter("userNo");
+			
+			Board b = new Board();
+			b.setCategory(category);
+			b.setBoardTitle(boardTitle);
+			b.setBoardContent(boardContent);
+			b.setBoardWriter(boardWriter);
+			
+			Attachment at = null; // 처음에는 null로 초기화, 넘어온 첨부파일이 있다면 생성
+			// multiRequest.getOriginalFileName("키"); 넘어온 첨부파일이 있었을 경우 "원본명" | 없었을 경우 null
+			if(multiRequest.getOriginalFileName("upfile") != null) { // 넘어온 첨부파일이 있을 경우
+				at = new Attachment(); //ㅡ at를 생성 // at에 들어갈 값 세팅ㄱ
+				at.setOriginName(multiRequest.getOriginalFileName("upfile")); //ㅡ at.setOriginName(원본명);
+				at.setChangeName(multiRequest.getFilesystemName("upfile")); //ㅡ 받아온 파일이 우리 시스템에서는 어떤 이름으로 들어가 있는거야?
+				at.setFilePath("resources/board_upfiles/"); //ㅡ 하드코딩으로 넣을것임.. 핵심 마지막에 / 필수!!
+			};
 			
 			// 4. 서비스 요청(요청처리)
+			int result = new BoardService().insertBoard(b, at);
 			
 			// 5. 응답뷰 지정 ㅡ 포워딩
+			// 성공 => /jsp/list.bo?cpage=1 url 재요청 => 목록페이지 ㅡ페이징바 있어서 cpage 작성해줘야함
+			if(result > 0) {
+				request.getSession().setAttribute("alertMsg", "일반게시판 등록 성공!");
+				response.sendRedirect(request.getContextPath() + "/list.bo?cpage=1"); // ㅡ sendRedirect가 url 재요청
+			}else {
+				// 실패 => 에러페이지
+				request.setAttribute("errorMsg", "일반게시판 등록 실패!");
+				request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
+			}
+			
 			
 		}
 		

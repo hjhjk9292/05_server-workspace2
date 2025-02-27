@@ -104,7 +104,7 @@
             		// 웹 애플리케이션의 디렉토리 구조가 url 노출되면 보안에 취약 ㄴ 주석 맞음
             		
             		// 단순한 페이지 요청도 servlet 호출해서 servlet 거쳐갈 것
-            		location.href = "<%= contextPath %>/enrollForm.me"
+            		location.href = "<%= contextPath %>/enrollForm.me";
             	}
             
             </script>
