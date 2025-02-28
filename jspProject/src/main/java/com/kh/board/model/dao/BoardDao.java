@@ -175,4 +175,86 @@ public class BoardDao {
 		return result;
 	}
 	
+	public int increaseCount(Connection conn, int boardNo) {
+		// update문 => 처리된 행수 => 트랜젝션 처리
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("increaseCount");
+		
+		try {
+			pstmt = conn.prepareStatement(sql); // 미완성된 sql문
+			pstmt.setInt(1, boardNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+	
+	public Board selectBoard(Connection conn, int boardNo) {
+		// select문 => ResultSet(한행) => Board 객체
+		Board b = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String sql = prop.getProperty("selectBoard");
+		
+		try {
+			pstmt = conn.prepareStatement(sql); // 미완성 sql문
+			pstmt.setInt(1, boardNo);
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				b = new Board(rset.getInt("board_no"),
+							  rset.getString("category_name"),
+							  rset.getString("board_title"),
+							  rset.getString("board_content"),
+							  rset.getString("user_id"),
+							  rset.getString("create_date"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		return b;
+	}
+	
+	public Attachment selectAttachment(Connection conn, int boardNo) {
+		// select문 => ResultSet(한행) => Attachment 객체
+		Attachment at = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String Sql = prop.getProperty("selectAttachment");
+		try {
+			pstmt = conn.prepareStatement(Sql);
+			pstmt.setInt(1, boardNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				at = new Attachment(); // ㅡ매개변수 생성자 안 만들고 기본생성자로 만들기(+ setter 메소드 활용)
+				at.setFileNo(rset.getInt("file_no"));
+				at.setOriginName(rset.getString("origin_name"));
+				at.setChangeName(rset.getString("change_name"));
+				at.setFilePath(rset.getString("file_path"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rset);
+			close(pstmt);
+		}
+		return at;
+	}
+	
 }

@@ -1,5 +1,6 @@
 package com.kh.board.controller;
 
+import java.io.File;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -126,7 +127,11 @@ public class BoardInsertController extends HttpServlet {
 				request.getSession().setAttribute("alertMsg", "일반게시판 등록 성공!");
 				response.sendRedirect(request.getContextPath() + "/list.bo?cpage=1"); // ㅡ sendRedirect가 url 재요청
 			}else {
-				// 실패 => 에러페이지
+				// 실패 => 첨부파일 있었다면 업로드된 파일 찾아서 삭제시킨 후 => 에러페이지
+				if(at != null) { // ㅡ 저장된 파일의 경로와 파일이름(수정된 이름)알아야 함
+					new File(savePath + at.getChangeName()).delete(); // ㅡ java.io에 있는 File을 import해서 delete 메소드 사용
+				}
+				
 				request.setAttribute("errorMsg", "일반게시판 등록 실패!");
 				request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
 			}
