@@ -41,8 +41,9 @@
         <h2 align="center">일반게시판 수정하기</h2>
         <br>
 
-        <form id="update-form" action="" method="post" enctype="multipart/form-data">
-		
+        <form id="update-form" action="<%= contextPath %>/update.bo" method="post" enctype="multipart/form-data">
+		     <input type="hidden" name="bno" value="<%= b.getBoardNo() %>">
+			
              <table align="center">
                 <tr>
                     <th>카테고리</th>
@@ -77,6 +78,7 @@
                     	<% if(at != null) { %>
 	                        <!-- 현재 이 게시글에 딸린 첨부파일이 있을 경우-->
 	                        <%= at.getOriginName() %>
+	                        <input type="hidden" name="originFileNo" value="<%= at.getFileNo() %>">
                         <% } %>
                         <input type="file" name="upfile"></td>
                 </tr>

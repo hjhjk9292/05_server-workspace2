@@ -85,4 +85,58 @@ public class BoardService {
 		return at;
 	}
 	
+	public int updateBoard(Board b, Attachment at) {
+		Connection conn = getConnection();
+		int result1 = new BoardDao().updateBoard(conn, b);
+		
+		int result2 = 1;
+		if(at != null) { // 새로운 첨부파일이 있었을 경우
+			
+			if(at.getFileNo() != 0) { // 기존의 첨부파일이 있었을 경우 => Update Attachment
+				result2 = new BoardDao().updateAttachment(conn, at);
+			}else { // 기존의 첨부파일 없었을 경우 => Insert Attachment
+				result2 = new BoardDao().insertNewAttachment(conn, at);
+			}
+			
+		}
+		
+		if(result1 > 0 && result2 > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result1 * result2;
+		
+	}
+	
+	public int deleteBoard(int boardNo, Attachment at) {
+		Connection conn = getConnection();
+		int result1 = new BoardDao().deleteBoard(conn, boardNo);
+		
+		int result2 = 1;
+		if(at != null) { 
+			
+			if(at.getFileNo() != 0) { 
+				result2 = new BoardDao().deleteBoard(conn, boardNo);
+			}else { 
+				result2 = new BoardDao().deleteAttachment(conn, at);
+			}
+			
+		}
+		
+		if(result1 > 0 && result2 > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		
+		return result1 * result2;
+		
+	}
+	
 }
