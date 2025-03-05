@@ -1,0 +1,15 @@
+-- 사진글 목록 조회용 sql 
+-- JOIN할건데 ATTACHMENT에도 STATUS가 있기 때문에 BOARD 테이블이라는 의미의 별칭B 붙이기
+-- 연결연산자로 이어주고 TITLEIMG 별칭 붙여주기
+SELECT
+       BOARD_NO
+     , BOARD_TITLE
+     , COUNT
+     , FILE_PATH || CHANGE_NAME "TITLEIMG"
+  FROM BOARD B
+  JOIN ATTACHMENT ON (BOARD_NO = REF_BNO)
+ WHERE BOARD_TYPE = 2
+   AND B.STATUS = 'Y'
+   AND FILE_LEVEL = 1
+ ORDER
+    BY BOARD_NO DESC

@@ -12,6 +12,8 @@ public class Board {
 	private String createDate; // to_char(2025-02-25, 'YYYY년')
 	private String status;
 	
+	private String titleImg; // 대표이미지 경로를 보관할 필드 ㅡ DB랑 똑같이 만들지 않아도 됨,, 필요하다면 새로 생성하면 됨 ㅡ getter, setter만 생성
+	
 	public Board() {}
 	
 	public Board(int boardNo, int boardType, String category, String boardTitle, String boardContent,
@@ -48,6 +50,25 @@ public class Board {
 		this.boardWriter = boardWriter;
 		this.createDate = createDate;
 	}
+	
+	
+
+	public Board(int boardNo, String boardTitle, int count, String titleImg) {
+		super();
+		this.boardNo = boardNo;
+		this.boardTitle = boardTitle;
+		this.count = count;
+		this.titleImg = titleImg;
+	}
+
+	public String getTitleImg() { // getter, setter만 생성
+		return titleImg;
+	}
+
+	public void setTitleImg(String titleImg) {
+		this.titleImg = titleImg;
+	}
+	
 
 	public int getBoardNo() {
 		return boardNo;

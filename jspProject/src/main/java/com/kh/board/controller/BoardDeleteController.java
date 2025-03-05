@@ -1,5 +1,6 @@
 package com.kh.board.controller;
 
+import java.io.File;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,33 +35,30 @@ public class BoardDeleteController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		if(ServletFileUpload.isMultipartContent(request)) {
-			int boardNo = Integer.parseInt(multiRequest.getParameter("bno"));
-			
-			Board b = bService.selectBoard(boardNo);
-			Attachment at = bService.selectAttachment(boardNo);
-			
-			String savePath = request.getSession().getServletContext().getRealPath("/resources/board_upfiles");
-			
-			MultipartRequest multiRequest = new MultipartRequest(request, savePath);
-			
-			int result = new BoardService().deleteBoard(boardNo, at);
-			
-			if(result > 0) {			
-				request.getSession().setAttribute("confirm", "");
-				response.sendRedirect(request.getContextPath() + "/list.bo?num=" + boardNo); 
-				
-			}else {
-				request.setAttribute("errorMsg", "게시글 삭제 실패");
-				request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
-			}			
-			
+        // 1. 삭제할 게시글 번호 가져오기
+        int boardNo = Integer.parseInt(request.getParameter("bno"));
+        // 2. 해당 게시글에 첨부파일이 있는지 확인
+        Attachment at = new BoardService().selectAttachment(boardNo);
+
+        // 3. 게시글 및 첨부파일 삭제 처리
+        int result = new BoardService().deleteBoard(boardNo);
+
+        if (result > 0) { // 삭제 성공
+            // 첨부파일이 있다면 실제 파일 삭제
+            String savePath = request.getSession().getServletContext().getRealPath("/resources/board_upfiles");
+            new File(savePath + at.getChangeName()).delete();
+            request.getSession().setAttribute("confirm", "게시글을 정말 삭제하시겠습니까?");
+
+            // 성공 메시지를 세션에 저장하고 리스트 페이지로 이동
+            request.getSession().setAttribute("alertMsg", "게시글이 성공적으로 삭제되었습니다.");
+            response.sendRedirect(request.getContextPath() + "/list.bo?cpage=1");
+
+        } else { // 삭제 실패
 			
 		}
-
-		
 		
 	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

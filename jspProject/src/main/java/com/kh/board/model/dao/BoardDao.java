@@ -37,7 +37,7 @@ public class BoardDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String sql = prop.getProperty("slelctListCount");
+		String sql = prop.getProperty("selectListCount");
 		
 		try {
 			pstmt = conn.prepareStatement(sql); // 완성된 sql문
@@ -347,14 +347,14 @@ public class BoardDao {
 		
 	}
 	
-	public int deleteAttachment(Connection conn, Attachment at) {
+	public int deleteAttachment(Connection conn, int boardNo) {
 		int result = 0;
 		PreparedStatement pstmt = null;
 		String sql = prop.getProperty("deleteAttachment");
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, at.getRefBoardNo());
+			pstmt.setInt(1, boardNo);
 			
 			result = pstmt.executeUpdate();
 					
@@ -364,6 +364,95 @@ public class BoardDao {
 			close(pstmt);
 		}
 		return result;
+	}
+
+	
+	public int insertThBoard(Connection conn, Board b) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		
+		String sql = prop.getProperty("insertThBoard");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, b.getBoardTitle());
+			pstmt.setString(2, b.getBoardContent());
+			pstmt.setInt(3, Integer.parseInt(b.getBoardWriter()));
+			
+			result = pstmt.executeUpdate();
+					
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+	
+	public int insertAttachmentList(Connection conn, ArrayList<Attachment> list) {
+		
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("insertAttachmentList");
+		
+		try {
+			
+			for(Attachment at :list) { // 파일의 개수만큼 for문이 돌게됨
+				// 미완성된 sql문 담은 pstmt 생성
+				pstmt = conn.prepareStatement(sql);
+				
+				// 완성형태로
+				pstmt.setString(1, at.getOriginName());
+				pstmt.setString(2, at.getChangeName());
+				pstmt.setString(3, at.getFilePath());
+				pstmt.setInt(4, at.getFileLevel());
+				
+				// 실행
+				result = pstmt.executeUpdate();
+				
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+		
+	}
+	
+	public ArrayList<Board> selectThumbnailList(Connection conn){
+		ArrayList<Board> list = new ArrayList<Board>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String sql = prop.getProperty("selectThumbnailList");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				list.add(new Board(rset.getInt("board_no"),
+								   rset.getString("board_title"),
+								   rset.getInt("count"),
+								   rset.getString("titleImg")
+								   ));
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
+		
 	}
 	
 }

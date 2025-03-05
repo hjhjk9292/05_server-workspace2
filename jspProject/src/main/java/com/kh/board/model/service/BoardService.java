@@ -112,20 +112,35 @@ public class BoardService {
 		
 	}
 	
-	public int deleteBoard(int boardNo, Attachment at) {
+	public int deleteBoard(int boardNo) {
 		Connection conn = getConnection();
-		int result1 = new BoardDao().deleteBoard(conn, boardNo);
+		Attachment at = new BoardDao().selectAttachment(conn, boardNo);
+        int result1 = 0;
+        int result2 = 0;
+        
+        if(at != null){
+        	result1 = new BoardDao().deleteBoard(conn, boardNo);
+        	result2 = new BoardDao().deleteAttachment(conn, boardNo);
+	        // 트랜잭션 처리 (둘 다 성공해야 commit)
+	        if (result1 > 0 && result2 > 0) {
+	            commit(conn);
+	        } else {
+	            rollback(conn);
+	        }
+	
+	        close(conn);
+        }
+
+        return result1 * result2; // 둘 다 성공해야 1 이상의 값 반환	
+
+    }
+
+	
+	public int insertThumbnailBoard(Board b, ArrayList<Attachment> list) {
+		Connection conn = getConnection();
 		
-		int result2 = 1;
-		if(at != null) { 
-			
-			if(at.getFileNo() != 0) { 
-				result2 = new BoardDao().deleteBoard(conn, boardNo);
-			}else { 
-				result2 = new BoardDao().deleteAttachment(conn, at);
-			}
-			
-		}
+		int result1 = new BoardDao().insertThBoard(conn, b); // 썸네일 길어서 Th로 
+		int result2 = new BoardDao().insertAttachmentList(conn, list);
 		
 		if(result1 > 0 && result2 > 0) {
 			commit(conn);
@@ -133,9 +148,16 @@ public class BoardService {
 			rollback(conn);
 		}
 		
-		close(conn);
-		
 		return result1 * result2;
+		
+	}
+	
+	public ArrayList<Board> selectThumbnailList(){
+		Connection conn = getConnection();
+		ArrayList<Board> list = new BoardDao().selectThumbnailList(conn);
+		
+		close(conn);
+		return list;
 		
 	}
 	
