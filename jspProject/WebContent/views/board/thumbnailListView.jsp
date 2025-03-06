@@ -28,9 +28,14 @@
 
     .thumbnail{
         border: 1px solid white;
-        /* width: 220px; */
+        width: 220px;
         display: inline-block;
         margin: 14px;
+    }
+    
+    .thumbnail:hover{
+    	cursor: pointer;
+    	opacity: 0.7;
     }
 </style>
 </head>
@@ -51,19 +56,30 @@
         <% } %>
 
         <div class="list-area">
+        
+        	<!-- 조회결과 화면상에 뿌려지도록 -->
 
-            <!-- 썸네일 한 개 -->
             <% for(Board b : list){ %>
-            <div class="thumbnail">
-                <img src="<%= b.getTitleImg()%>" width="200" height="150">
+            <!-- 썸네일 한 개 -->
+            <div class="thumbnail" align="center">
+            	<input type="hidden" value="<%= b.getBoardNo() %>">
+                <img src="<%= contextPath %>/<%= b.getTitleImg()%>" width="200" height="150">
                 <p>
-                    <%= b.getBoardNo() %> <%= b.getBoardTitle() %> <br>
-                    <%= b.getCount() %>
+                    No.<%= b.getBoardNo() %> <%= b.getBoardTitle() %> <br>
+                    조회수 : <%= b.getCount() %>
                 </p>
             </div>
             <% } %>
-
         </div>
     </div>
+    
+    <script>
+    	$(function(){
+    		$(".thumbnail").click(function(){
+    			location.href= "<%= contextPath %>/detail.th?bno=" + $(this).children("input").val();
+    		})
+    	})
+    </script>
+    
 </body>
 </html>

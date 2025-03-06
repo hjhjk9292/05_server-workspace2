@@ -218,6 +218,33 @@ public class MemberDao {
 	    return result; // 삭제된 행 개수 반환
 	}
 
+	public int idCheck(Connection conn, String checkId) {
+		// select문 => ResultSet(한 행) => int
+		int count = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("idCheck");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, checkId);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				count = rset.getInt("count");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return count;
+		
+	}
 	
 	
 	

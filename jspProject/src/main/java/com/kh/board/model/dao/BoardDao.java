@@ -435,7 +435,12 @@ public class BoardDao {
 			pstmt = conn.prepareStatement(sql);
 			rset = pstmt.executeQuery();
 			
+			// 조회 결과들 뽑아서 list 담아서 반환
 			while(rset.next()) {
+				// Board b = new Board();
+				// b.setBoardNo(rset.getInt("board_no");
+				// ...
+				// list.add(b); ㅡ 이렇게도 가능
 				list.add(new Board(rset.getInt("board_no"),
 								   rset.getString("board_title"),
 								   rset.getInt("count"),
@@ -453,6 +458,34 @@ public class BoardDao {
 		
 		return list;
 		
+	}
+	
+	public ArrayList<Attachment> selectAttachmentList(Connection conn, int BoardNo){
+		ArrayList<Attachment> list = new ArrayList<Attachment>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("selectAttachment"); // 쿼리를 재활용하기 위해 쿼리랑 맞춰서 "selectAttachment"
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, BoardNo);
+			rset = pstmt.executeQuery(); // 조회된 결과가 표와 같은 결과로 rset에 담김
+			
+			while(rset.next()) {
+				Attachment at = new Attachment();
+				at.setChangeName(rset.getString("change_name")); // 쿼리에 작성되어 있는 거 다 안 뽑고
+				at.setFilePath(rset.getString("file_path")); // 필요한 것만 뽑아도 됨(여기선 2개)
+				
+				list.add(at);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		return list;
 	}
 	
 }
