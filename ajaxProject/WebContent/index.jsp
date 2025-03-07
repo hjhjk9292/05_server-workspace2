@@ -121,6 +121,160 @@
 			})
 		})
 	</script>
+	
+	<br>
+	
+	<h3>2. 버튼 클릭 시 post방식으로 서버에 여러개의 데이터 전송 및 응답</h3>
+	이름 : <input type="text" id="input2_1"> <br>
+	나이 : <input type="number" id="input2_2"> <br>
+	<button onclick="test2()">전송</button> <br>
+	
+	<!-- v1 방식
+	응답 : <label id="output2"></label>
+	
+	<script>
+		function test2() {
+			
+			$.ajax({
+				url:"jqAjax2.do",
+				data:{
+					name:$("#input2_1").val(),
+					age:$("#input2_2").val(),
+				},
+				type:"post",
+				success:function(a){
+					$("#output2").text(a);
+					$("#input2_1").val("");
+					$("#input2_2").val("");
+				},
+				error:function(){
+					console.log("ajax 통신 실패");
+				},
+			})
+		}
+	</script>
+	 -->
+	 
+	 <!-- v2 -->
+	 응답
+	 <ul id="output2">
+	 
+	 </ul>
+	 
+	 <script>
+	 	function test2(){
+	 		$.ajax({
+	 			url:"jqAjax2.do",
+	 			data:{
+	 				name:$("#input2_1").val(),
+	 				age:$("#input2_2").val(),
+	 			},
+	 			type:"post",
+	 			success:function(a){
+	 				/* JSONArray 경우
+	 				console.log(a)
+	 				console.log(a[0])
+	 				console.log(a[1])
+	 				*/
+	 				
+	 				console.log(a)
+	 				console.log(a.name);
+	 				console.log(a.age)
+	 				
+	 				const value = "<li>" + a.name + "</li>"
+	 							+ "<li>" + a.age  + "</li>";
+	 							
+	 				$("#output2").html(value);
+	 				
+	 			},
+	 			error:function(){
+	 				
+	 			},
+	 		})
+	 	}
+	 </script>
+	 <br>
+	 
+	 <h3>3. 서버에 데이터 전송 후, 조회된 vo 객체를 응답데이터로 </h3>
+	 
+	 검색하고자 하는 회원번호 : <input type="number" id="input3">
+	 <button onclick="test3()">조회</button>
+	 
+	 <div id="output3"></div>
+	 
+	 <script>
+	 	function test3(){
+	 		$.ajax({
+	 			url:"jqAjax3.do",
+	 			data:{no:$("#input3").val()},
+	 			success:function(result){ 
+	 				
+	 				console.log(result);
+	 				
+	 				const value = "이름 : " + result.userName + "<br>"
+	 							+ ", 나이 : " + result.age + "<br>"
+	 							+ ", 성별 : " + result.gender + "<br>"
+	 				
+	 				$("#output3").html(value);
+	 							
+	 			}, error:function(){
+	 				console.log("ajax 통신 실패"); // 비동기 통신은 에러 찾기 힘드니 작성해주면 좋음
+	 			}
+	 		})
+	 	}
+	 
+	 </script>
+	 
+	 <br>
+	 
+	 <h3>4. 응답데이터로 조회된 여러 vo객체들이 담겨있는 ArrayList 받기</h3>
+	 
+	 <button onclick="test4()">회원 전체 조회</button>
+	 <br><br>
+	 
+	 <table id="output4" border="1">
+	 	<thead>
+	 		<tr>
+	 			<td>번호</td>
+	 			<td>이름</td>
+	 			<td>나이</td>
+	 			<td>성별</td>
+	 		</tr>
+	 	</thead>
+	 	<tbody>
+	 	
+	 	</tbody>
+	 </table>
+	 
+	 <script>
+	 	function test4(){
+	 		$.ajax({
+	 			url:"jqAjax4.do",
+	 			success:function(result){ // [{key:value, key:value, key:value}]
+	 			
+	 				console.log(result);
+	 			
+	 				let value = "";
+	 				for(let i=0; i<result.length; i++){
+	 					value += "<tr>"
+	 								+ "<td>" + result[i].userNo + "</td>"
+	 								+ "<td>" + result[i].userName + "</td>"
+	 								+ "<td>" + result[i].age + "</td>"
+	 								+ "<td>" + result[i].gender + "</td>"
+	 							+ "</tr>"
+	 				}
+	 				
+	 				// console.log(value);
+	 				$("#output4 tbody").html(value);
+	 			
+	 			}, error:function(){
+	 				console.log("ajax 통신 실패")
+	 			}
+	 		})
+	 	}
+	 </script>
 
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>

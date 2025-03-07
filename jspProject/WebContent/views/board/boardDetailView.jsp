@@ -19,7 +19,7 @@
         background-color: black;
         color: white;
         width: 1000px;
-        height: 550px;
+        height: auto;
         margin: auto;
         margin-top: 50px;
     }
@@ -82,6 +82,75 @@
             <a href="<%= contextPath %>/delete.bo?bno=<%= b.getBoardNo() %>" class="btn btn-sm btn-danger">삭제하기</a>
             <% } %>
         </div>
+
+        <br><br>
+        
+        <div id="reply-area">
+
+            <table border="1" align="center">
+                <thead>
+
+                    <tr>
+                        <th>댓글작성</th>
+                        <td>
+                            <textarea rows="3" cols="50" style="resize: none;"></textarea>
+                        </td>
+                        <td><button>댓글등록</button></td>
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>admin</td>
+                        <td>재밌네욯ㅎㅎㅎ</td>
+                        <td>25/03/07 12:24</td>
+                    </tr>
+                    <tr>
+                        <td>admin</td>
+                        <td>ㅋㅋㅋㅋ재밌네요</td>
+                        <td>25/03/07 12:24</td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+            
+            <script>
+            	$(function(){
+            		// 댓글 조회
+            		selectReplyList();
+            	})
+            	
+            	//ajax으로 해당 게시글에 달린 댓글 목록 조회용 함수
+            	function selectReplyList(){
+            		$.ajax({
+            			url:"rlist.bo",
+            			data:{bno:<%= b.getBoardNo() %>},
+            			success:function(result){
+            				
+            				console.log(result);
+            				
+            				let value = "";
+            				for(let i=0; i<result.length; i++){
+            					value += "<tr>"
+            								+ "<td>" + result[i].replyWriter + "</td>"
+            								+ "<td>" + result[i].replyContent + "</td>"
+            								+ "<td>" + result[i].createDate + "</td>"
+            							+ "</tr>"
+            				}
+            				
+            				$("#reply-area table tbody").html(value);
+            				
+            			},error:function(){
+            				console.log("댓글목록 조회용 ajax 통신 실패")
+            			}
+            		})
+            	}
+            </script>
+        
+        </div>
+        
     </div>
 
 </body>

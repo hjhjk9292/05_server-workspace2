@@ -12,6 +12,7 @@ import java.util.Properties;
 import com.kh.board.model.vo.Attachment;
 import com.kh.board.model.vo.Board;
 import com.kh.board.model.vo.Category;
+import com.kh.board.model.vo.Reply;
 import com.kh.common.model.vo.PageInfo;
 
 import static com.kh.common.JDBCTemplate.*;
@@ -477,6 +478,37 @@ public class BoardDao {
 				at.setFilePath(rset.getString("file_path")); // 필요한 것만 뽑아도 됨(여기선 2개)
 				
 				list.add(at);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		return list;
+	}
+	
+	public ArrayList<Reply> selectReplyList(Connection conn, int boardNo){
+		ArrayList<Reply> list = new ArrayList<Reply>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("selectReplyList");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardNo);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Reply r = new Reply();
+				r.setReplyNo(rset.getInt("reply_no"));
+				r.setReplyWriter(rset.getString("user_id"));
+				r.setReplyContent(rset.getString("reply_content"));
+				r.setCreateDate(rset.getString("create_date"));
+				
+				list.add(r);
+				
 			}
 			
 		} catch (SQLException e) {
