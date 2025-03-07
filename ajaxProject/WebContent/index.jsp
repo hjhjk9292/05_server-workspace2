@@ -10,7 +10,7 @@
 
 </head>
 <body>
-	<h1>AJAX 개요123</h1>
+	<h1>AJAX 개요</h1>
 	
 	<p>
 		Asynchronous JavaScript And XML의 약자로 <br>
