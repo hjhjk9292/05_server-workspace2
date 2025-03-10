@@ -175,4 +175,15 @@ public class BoardService {
 		close(conn);
 		return list;
 	}
+	
+	public int insertReply(Reply r) { // 매개변수 Reply r로 받는다
+		Connection conn = getConnection();
+		int result = new BoardDao().insertReply(conn, r);
+		if(result > 0) {
+			commit(conn);
+		}else {
+			rollback(conn);
+		}
+		return result;
+	}
 }

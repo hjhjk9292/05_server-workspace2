@@ -501,10 +501,11 @@ public class BoardDao {
 			rset = pstmt.executeQuery();
 			
 			while(rset.next()) {
+				// list.add(new Reply(rset.getInt("reply_no"), ...); vo에서 생성자 만들어서 하는 방법도 가능!
 				Reply r = new Reply();
 				r.setReplyNo(rset.getInt("reply_no"));
-				r.setReplyWriter(rset.getString("user_id"));
 				r.setReplyContent(rset.getString("reply_content"));
+				r.setReplyWriter(rset.getString("user_id"));
 				r.setCreateDate(rset.getString("create_date"));
 				
 				list.add(r);
@@ -518,6 +519,29 @@ public class BoardDao {
 			close(pstmt);
 		}
 		return list;
+	}
+	
+	public int insertReply(Connection conn, Reply r) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("insertReply");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, r.getReplyContent());
+			pstmt.setInt(2, r.getRefBoardNo());
+			pstmt.setInt(3, Integer.parseInt(r.getReplyWriter()));
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+		
 	}
 	
 }

@@ -1,29 +1,27 @@
 package com.kh.board.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
 import com.kh.board.model.service.BoardService;
 import com.kh.board.model.vo.Reply;
+import com.kh.member.model.vo.Member;
 
 /**
- * Servlet implementation class AjaxReplyListController
+ * Servlet implementation class AjaxReplyInsertController
  */
-@WebServlet("/rlist.bo")
-public class AjaxReplyListController extends HttpServlet {
+@WebServlet("/rinsert.bo")
+public class AjaxReplyInsertController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AjaxReplyListController() {
+    public AjaxReplyInsertController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,15 +30,21 @@ public class AjaxReplyListController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
+		String replyContent = request.getParameter("content");
 		int boardNo = Integer.parseInt(request.getParameter("bno"));
 		
-		ArrayList<Reply> list = new BoardService().selectReplyList(boardNo); 
-		// [{},{},{},{},..] => JSON 형태
+		int userNo = ((Member)request.getSession().getAttribute("loginUser")).getUserNo();
 		
-		response.setContentType("application/json; charset=utf-8"); // 내가 보내는 데이터의 타입을 정하는 객체(application객체 안에 있는 json이라는 객체다)
-		new Gson().toJson(list, response.getWriter()); // getWriter() : 출력용스트림
+		Reply r = new Reply();
+		r.setReplyContent(replyContent);
+		r.setRefBoardNo(boardNo);
+		// r.setReplyWriter(userNo + ""); // ㅡ 스트링으로 변경하는 방법 ㄱ
+		r.setReplyWriter(String.valueOf(userNo));
 		
+		int result = new BoardService().insertReply(r); // r을 인자로 넘긴다
+		
+		response.getWriter().print(result);
 	}
 
 	/**
