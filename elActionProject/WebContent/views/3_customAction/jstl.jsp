@@ -31,5 +31,13 @@
 	<p>변수와 조건문, 반복문 등의 로직과 관련된 문법을 제공</p>
 	<a href="01_core.jsp">core library</a>
 	
+	<h4>2. JSTL Formatting Library</h4>
+	<p>숫자, 날짜 및 시간 데이터의 출력 형식을 지정할 떄 사용하는 문법을 제공</p>
+	<a href="02_fmt.jsp">fmt library</a>
+	
+	<h4>3. JSTL Function Library</h4>
+	<p>EL 안에서 사용할 수 있는 메소드를 제공</p>
+	<a href="03_fn.jsp">fn library</a>
+	
 </body>
 </html>
